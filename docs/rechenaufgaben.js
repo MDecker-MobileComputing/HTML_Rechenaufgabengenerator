@@ -153,9 +153,6 @@ function writeRechenaufgabenToPDF( rechenaufgabenArray ) {
         author: "Rechenaufgabengenerator (Clientseitige Web-App)"
     });
 
-    doc.setFontSize( 20 );
-    doc.text( "Rechenaufgaben", 105, 15, { align: "center" });
-
     // Rechenaufgaben paarweise in Zeilen anordnen (2 Spalten)
     const tabellenDaten = [];
     
@@ -187,12 +184,11 @@ function writeRechenaufgabenToPDF( rechenaufgabenArray ) {
         margin: { top: 35, left: 15, right: 15 }
     });
 
+    // Anzahl der Aufgabenseiten vor dem Hinzufügen der Lösungsseiten merken
+    const aufgabenSeiten = doc.internal.getNumberOfPages();
+
     // Neue Seite für Musterlösung hinzufügen
     doc.addPage();
-    
-    // Titel "Musterlösung"
-    doc.setFontSize( 20 );
-    doc.text( "Musterlösungen", 105, 15, { align: "center" });
 
     // Lösungsdaten vorbereiten (mit Ergebnissen)
     const loesungsDaten = [];
@@ -225,6 +221,9 @@ function writeRechenaufgabenToPDF( rechenaufgabenArray ) {
         margin: { top: 35, left: 15, right: 15 }
     });
 
+    // Seitentitel zu allen Seiten hinzufügen
+    addPageTitles( doc, aufgabenSeiten );
+
     // Footer hinzufügen
     writeFooterToPDF( doc );
 
@@ -235,6 +234,34 @@ function writeRechenaufgabenToPDF( rechenaufgabenArray ) {
 
     // Optional: PDF auch als Download anbieten
     // doc.save( "rechenaufgaben.pdf" );
+}
+
+
+/**
+ * Fügt Seitentitel mit Seitenzahlen zu allen Seiten des PDFs hinzu.
+ * 
+ * @param {jsPDF} doc - Das jsPDF-Dokument
+ * @param {number} aufgabenSeiten - Anzahl der Seiten mit Rechenaufgaben
+ */
+function addPageTitles( doc, aufgabenSeiten ) {
+
+    const pageCount = doc.internal.getNumberOfPages();
+    const loesungsSeiten = pageCount - aufgabenSeiten;
+    
+    for ( let i = 1; i <= pageCount; i++ ) {
+
+        doc.setPage( i );
+        doc.setFontSize( 20 );
+        
+        if ( i <= aufgabenSeiten ) {
+            // Seiten mit Rechenaufgaben
+            doc.text( `Rechenaufgaben (${i} von ${aufgabenSeiten})`, 105, 15, { align: "center" });
+        } else {
+            // Seiten mit Musterlösungen
+            const loesungsSeiteNummer = i - aufgabenSeiten;
+            doc.text( `Musterlösung (Seite ${loesungsSeiteNummer} von ${loesungsSeiten})`, 105, 15, { align: "center" });
+        }
+    }
 }
 
 
