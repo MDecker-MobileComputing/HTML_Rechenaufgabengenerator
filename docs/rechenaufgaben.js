@@ -147,7 +147,7 @@ function writeRechenaufgabenToPDF( rechenaufgabenArray ) {
     const doc = new jsPDF();
 
     doc.setFontSize( 20 );
-    doc.text( "Rechenaufgaben", 105, 20, { align: "center" });
+    doc.text( "Rechenaufgaben", 105, 15, { align: "center" });
 
     // Rechenaufgaben paarweise in Zeilen anordnen (2 Spalten)
     const tabellenDaten = [];
@@ -163,8 +163,46 @@ function writeRechenaufgabenToPDF( rechenaufgabenArray ) {
 
     // Tabelle erstellen
     doc.autoTable({
-        startY: 25,
+        startY: 20,
         body: tabellenDaten,
+        styles: {
+            fontSize: 14,
+            cellPadding: 3,
+            halign: "left"
+        },
+        alternateRowStyles: {
+            fillColor: [ 255, 255, 255 ] // Weiß für alle Zeilen
+        },
+        columnStyles: {
+            0: { cellWidth: 90 },
+            1: { cellWidth: 90 }
+        },
+        margin: { top: 35, left: 15, right: 15 }
+    });
+
+    // Neue Seite für Musterlösung hinzufügen
+    doc.addPage();
+    
+    // Titel "Musterlösung"
+    doc.setFontSize( 20 );
+    doc.text( "Musterlösungen", 105, 15, { align: "center" });
+
+    // Lösungsdaten vorbereiten (mit Ergebnissen)
+    const loesungsDaten = [];
+    
+    for ( let i = 0; i < rechenaufgabenArray.length; i += 2 ) {
+        
+        const loesung1 = rechenaufgabenArray[ i ].getLoesungAlsString();
+        const loesung2 = i + 1 < rechenaufgabenArray.length ? 
+                                 rechenaufgabenArray[ i + 1 ].getLoesungAlsString() : '';
+        
+        loesungsDaten.push( [ loesung1, loesung2 ] );
+    }
+
+    // Lösungstabelle erstellen
+    doc.autoTable({
+        startY: 20,
+        body: loesungsDaten,
         styles: {
             fontSize: 14,
             cellPadding: 3,
