@@ -1,6 +1,6 @@
 "use strict";
 
-let anzahlAufgaben = 10; 
+let anzahlAufgaben = 84; 
 
 let zahl1min = 9990;
 let zahl1max = 999;
@@ -146,14 +146,12 @@ function writeRechenaufgabenToPDF( rechenaufgabenArray ) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
-
     doc.setFontSize( 20 );
     doc.text( "Rechenaufgaben", 105, 20, { align: "center" });
 
-    // Tabellendaten vorbereiten
+    // Rechenaufgaben paarweise in Zeilen anordnen (2 Spalten)
     const tabellenDaten = [];
     
-    // Rechenaufgaben paarweise in Zeilen anordnen (2 Spalten)
     for ( let i = 0; i < rechenaufgabenArray.length; i += 2 ) {
         
         const aufgabe1 = rechenaufgabenArray[ i ].getAufgabeAlsString();
@@ -165,7 +163,7 @@ function writeRechenaufgabenToPDF( rechenaufgabenArray ) {
 
     // Tabelle erstellen
     doc.autoTable({
-        startY: 35,
+        startY: 25,
         body: tabellenDaten,
         styles: {
             fontSize: 14,
@@ -218,10 +216,23 @@ function writeFooterToPDF( doc ) {
     });
     
     // Wochentag auf Deutsch ermitteln
-    const weekdays = [ "So", "Mo", "Di", "Mi", "Do", "Fr", "Sa" ];
-    const weekday = weekdays[currentDate.getDay()];
+    const wochentageArray = [ "So", "Mo", "Di", "Mi", "Do", "Fr", "Sa" ];
+    const wochentag       = wochentageArray[ currentDate.getDay() ];
     
     const pageHeight = doc.internal.pageSize.height;
+    const pageWidth = doc.internal.pageSize.width;
     doc.setFontSize(10);
-    doc.text( `Erstellt am: ${dateString} (${weekday}), ${timeString} Uhr`, 15, pageHeight - 10 );
+    
+    // Seitenzahl und Datum/Zeit für jede Seite hinzufügen
+    const pageCount = doc.internal.getNumberOfPages();
+    for ( let i = 1; i <= pageCount; i++ ) {
+
+        doc.setPage( i );
+        
+        // Datum und Zeit links
+        doc.text( `Erstellt am: ${dateString} (${wochentag}), ${timeString} Uhr`, 15, pageHeight - 10 );
+
+        // Seitenzahl rechts
+        doc.text( `Seite ${i} von ${pageCount}`, pageWidth - 15, pageHeight - 10, { align: "right" });
+    }
 }
