@@ -107,14 +107,14 @@ async function onButtonRechenaufgabenErzeugen() {
             ergebnis = zahl1 - zahl2;
         }
 
-        // Rechenaufgabe erstellen und zum Array hinzufügen
+
         let rechenaufgabe = new Rechenaufgabe( zahl1, zahl2, operator, ergebnis );
         rechenaufgabenArray.push( rechenaufgabe );
     }
 
-    // PDF mit allen Rechenaufgaben erstellen
     writeRechenaufgabenToPDF( rechenaufgabenArray );
 };
+
 
 /**
  * Erstellt PDF mit den Rechenaufgaben.
@@ -126,33 +126,34 @@ function writeRechenaufgabenToPDF( rechenaufgabenArray ) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
+
     doc.setFontSize( 20 );
-    doc.text( "Rechenaufgaben", 105, 20, { align: 'center' });
+    doc.text( "Rechenaufgaben", 105, 20, { align: "center" });
 
     // Tabellendaten vorbereiten
-    const tableData = [];
+    const tabellenDaten = [];
     
     // Rechenaufgaben paarweise in Zeilen anordnen (2 Spalten)
     for ( let i = 0; i < rechenaufgabenArray.length; i += 2 ) {
         
-        const aufgabe1 = rechenaufgabenArray[i].getAufgabeAlsString();
+        const aufgabe1 = rechenaufgabenArray[ i ].getAufgabeAlsString();
         const aufgabe2 = i + 1 < rechenaufgabenArray.length ? 
-                                rechenaufgabenArray[i + 1].getAufgabeAlsString() : '';
+                                 rechenaufgabenArray[ i + 1 ].getAufgabeAlsString() : '';
         
-        tableData.push([aufgabe1, aufgabe2]);
+        tabellenDaten.push( [ aufgabe1, aufgabe2 ] );
     }
 
     // Tabelle erstellen
     doc.autoTable({
         startY: 35,
-        body: tableData,
+        body: tabellenDaten,
         styles: {
             fontSize: 14,
-            cellPadding: 8,
-            halign: 'left'
+            cellPadding: 3,
+            halign: "left"
         },
         alternateRowStyles: {
-            fillColor: [255, 255, 255] // Weiß für alle Zeilen
+            fillColor: [ 255, 255, 255 ] // Weiß für alle Zeilen
         },
         columnStyles: {
             0: { cellWidth: 90 },
@@ -161,7 +162,26 @@ function writeRechenaufgabenToPDF( rechenaufgabenArray ) {
         margin: { top: 35, left: 15, right: 15 }
     });
 
-    // Footer mit aktuellem Datum und Uhrzeit hinzufügen
+    // Footer hinzufügen
+    writeFooterToPDF( doc );
+
+    // PDF im Browser-Tab zur Vorschau öffnen
+    const pdfBlob = doc.output( "blob");
+    const pdfUrl = URL.createObjectURL( pdfBlob );
+    window.open( pdfUrl, "_blank" );
+
+    // Optional: PDF auch als Download anbieten
+    // doc.save( "rechenaufgaben.pdf" );
+}
+
+
+/**
+ * Schreibt den Footer mit aktuellem Datum, Wochentag und Uhrzeit in das PDF.
+ * 
+ * @param {jsPDF} doc - Das jsPDF-Dokument
+ */
+function writeFooterToPDF( doc ) {
+
     const currentDate = new Date();
     
     // Datum und Zeit separat formatieren
@@ -184,7 +204,4 @@ function writeRechenaufgabenToPDF( rechenaufgabenArray ) {
     const pageHeight = doc.internal.pageSize.height;
     doc.setFontSize(10);
     doc.text(`Erstellt am: ${dateString} (${weekday}), ${timeString} Uhr`, 15, pageHeight - 10);
-
-    // PDF speichern
-    doc.save( "rechenaufgaben.pdf" );
 }
