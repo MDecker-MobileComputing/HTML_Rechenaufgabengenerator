@@ -7,6 +7,12 @@ in Form einer PDF-Datei schreibt.
 
 <br>
 
+Webseite über *GitHub Pages*: 
+
+https://mdecker-mobilecomputing.github.io/HTML_Rechenaufgabengenerator/
+
+<br>
+
 ----
 
 ## License ##

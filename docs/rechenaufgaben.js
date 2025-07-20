@@ -65,8 +65,8 @@ class Rechenaufgabe {
      */
     getLoesungAlsString() {
 
-        const zahl1Formatiert = formatZahlMitTausendertrennpunkten( this.zahl1 );
-        const zahl2Formatiert = formatZahlMitTausendertrennpunkten( this.zahl2 );
+        const zahl1Formatiert  = formatZahlMitTausendertrennpunkten( this.zahl1  );
+        const zahl2Formatiert  = formatZahlMitTausendertrennpunkten( this.zahl2  );
         const resultFormatiert = formatZahlMitTausendertrennpunkten( this.result );
 
         return `${zahl1Formatiert} ${this.operator} ${zahl2Formatiert} = ${resultFormatiert}`;
@@ -145,6 +145,13 @@ function writeRechenaufgabenToPDF( rechenaufgabenArray ) {
 
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
+
+    // PDF-Metadaten hinzufügen
+    doc.setProperties({
+        title: "Rechenaufgaben",
+        subject: `Anzahl Rechenaufgaben: ${anzahlAufgaben}, Zahl1: ${zahl1min}-${zahl1max}, Zahl2: ${zahl2min}-${zahl2max}`,
+        author: "Rechenaufgabengenerator (Clientseitige Web-App)"
+    });
 
     doc.setFontSize( 20 );
     doc.text( "Rechenaufgaben", 105, 15, { align: "center" });
