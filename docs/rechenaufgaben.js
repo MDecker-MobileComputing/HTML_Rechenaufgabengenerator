@@ -126,7 +126,6 @@ function writeRechenaufgabenToPDF( rechenaufgabenArray ) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
-    // Titel hinzufügen
     doc.setFontSize( 20 );
     doc.text( "Rechenaufgaben", 105, 20, { align: 'center' });
 
@@ -138,7 +137,7 @@ function writeRechenaufgabenToPDF( rechenaufgabenArray ) {
         
         const aufgabe1 = rechenaufgabenArray[i].getAufgabeAlsString();
         const aufgabe2 = i + 1 < rechenaufgabenArray.length ? 
-                        rechenaufgabenArray[i + 1].getAufgabeAlsString() : '';
+                                rechenaufgabenArray[i + 1].getAufgabeAlsString() : '';
         
         tableData.push([aufgabe1, aufgabe2]);
     }
@@ -146,17 +145,14 @@ function writeRechenaufgabenToPDF( rechenaufgabenArray ) {
     // Tabelle erstellen
     doc.autoTable({
         startY: 35,
-        head: [['Aufgabe 1', 'Aufgabe 2']],
         body: tableData,
         styles: {
             fontSize: 14,
             cellPadding: 8,
             halign: 'left'
         },
-        headStyles: {
-            fillColor: [220, 220, 220],
-            textColor: [0, 0, 0],
-            fontStyle: 'bold'
+        alternateRowStyles: {
+            fillColor: [255, 255, 255] // Weiß für alle Zeilen
         },
         columnStyles: {
             0: { cellWidth: 90 },
@@ -164,6 +160,30 @@ function writeRechenaufgabenToPDF( rechenaufgabenArray ) {
         },
         margin: { top: 35, left: 15, right: 15 }
     });
+
+    // Footer mit aktuellem Datum und Uhrzeit hinzufügen
+    const currentDate = new Date();
+    
+    // Datum und Zeit separat formatieren
+    const dateString = currentDate.toLocaleDateString('de-DE', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    });
+    
+    const timeString = currentDate.toLocaleTimeString('de-DE', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    });
+    
+    // Wochentag auf Deutsch ermitteln
+    const weekdays = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+    const weekday = weekdays[currentDate.getDay()];
+    
+    const pageHeight = doc.internal.pageSize.height;
+    doc.setFontSize(10);
+    doc.text(`Erstellt am: ${dateString} (${weekday}), ${timeString} Uhr`, 15, pageHeight - 10);
 
     // PDF speichern
     doc.save( "rechenaufgaben.pdf" );
