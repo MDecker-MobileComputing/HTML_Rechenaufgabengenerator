@@ -1,0 +1,170 @@
+"use strict";
+
+let anzahlAufgaben = 10; 
+
+let zahl1min =  50;
+let zahl1max = 100;
+
+let zahl2min = 150;
+let zahl2max = 999;
+
+
+/**
+ * Klasse für eine Rechenaufgabe
+ */
+class Rechenaufgabe {
+    
+    /**
+     * Konstruktor für eine Rechenaufgabe.
+     * 
+     * @param {number} zahl1 - Die erste Zahl
+     * 
+     * @param {number} zahl2 - Die zweite Zahl
+     * 
+     * @param {string} operator - Der Operator (z.B. "+", "-", "*", "/")
+     * 
+     * @param {number} result - Das Ergebnis der Rechenaufgabe
+     */
+    constructor( zahl1, zahl2, operator, result ) {
+
+        this.zahl1    = zahl1;
+        this.zahl2    = zahl2;
+        this.operator = operator;
+        this.result   = result;
+    }
+
+    /**
+     * Gibt die Rechenaufgabe ohne Ergebnis zurück
+     * @returns {string} Die Aufgabe ohne Lösung, z.B. "5 + 3 = "
+     */
+    getAufgabeAlsString() {
+
+        return `${this.zahl1} ${this.operator} ${this.zahl2} = `;
+    }
+
+    /**
+     * Gibt die Rechenaufgabe als String mit dem Ergebnis zurück
+     * @returns {string} Die Rechenaufgabe als String mit dem Ergebnis,
+     *                   z.B. "5 + 3 = 8"
+     */
+    getLoesungAlsString() {
+
+        return `${this.zahl1} ${this.operator} ${this.zahl2} = ${this.result}`;
+    }
+}
+
+
+/**
+ * Event-Handler, der aufgerufen wird, wenn die Webseite geladen wurde.
+ */
+window.addEventListener( "load", async function () {
+
+    const buttonRechenaufgabenErzeugen = this.document.getElementById( "buttonRechenaufgabenErzeugen" );
+    buttonRechenaufgabenErzeugen.addEventListener( "click", onButtonRechenaufgabenErzeugen );
+});
+
+
+/**
+ * Gibt eine zufällige Zahl in einem bestimmten Bereich zurück.
+ * 
+ * @param {number} min - Die untere Grenze (inklusive)
+ * 
+ * @param {number} max - Die obere Grenze (inklusive)
+ * 
+ * @returns {number} Eine zufällige Zahl im Bereich von `min` bis `max`
+ */
+function getZufallszahl( min, max ) {
+
+    return Math.floor( Math.random() * ( max - min + 1 ) ) + min;
+}
+
+
+/**
+ * Event-Handler, der aufgerufen wird, wenn der Button "Rechenaufgaben erzeugen" geklickt wird.
+ * Erzeugt Rechenaufgaben und schreibt sie dann in eine PDF-Datei.
+ */
+async function onButtonRechenaufgabenErzeugen() {
+
+    let rechenaufgabenArray = [];
+
+    for( let i = 0; i < anzahlAufgaben; i++ ) {
+
+        // Zufällige Zahlen generieren
+        let zahl1 = getZufallszahl( zahl1min, zahl1max );
+        let zahl2 = getZufallszahl( zahl2min, zahl2max );
+
+        // Zufälligen Operator wählen
+        let operator = Math.random() < 0.5 ? "+" : "-";
+
+        // Ergebnis berechnen
+        let ergebnis;
+        if ( operator === "+" ) {
+
+            ergebnis = zahl1 + zahl2;
+
+        } else {
+
+            ergebnis = zahl1 - zahl2;
+        }
+
+        // Rechenaufgabe erstellen und zum Array hinzufügen
+        let rechenaufgabe = new Rechenaufgabe( zahl1, zahl2, operator, ergebnis );
+        rechenaufgabenArray.push( rechenaufgabe );
+    }
+
+    // PDF mit allen Rechenaufgaben erstellen
+    writeRechenaufgabenToPDF( rechenaufgabenArray );
+};
+
+/**
+ * Erstellt PDF mit den Rechenaufgaben.
+ * 
+ * @param {Array<Rechenaufgabe>} rechenaufgabenArray In PDF-Datei zu schreibende Rechenaufgaben
+ */
+function writeRechenaufgabenToPDF( rechenaufgabenArray ) {
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Titel hinzufügen
+    doc.setFontSize( 20 );
+    doc.text( "Rechenaufgaben", 105, 20, { align: 'center' });
+
+    // Tabellendaten vorbereiten
+    const tableData = [];
+    
+    // Rechenaufgaben paarweise in Zeilen anordnen (2 Spalten)
+    for ( let i = 0; i < rechenaufgabenArray.length; i += 2 ) {
+        
+        const aufgabe1 = rechenaufgabenArray[i].getAufgabeAlsString();
+        const aufgabe2 = i + 1 < rechenaufgabenArray.length ? 
+                        rechenaufgabenArray[i + 1].getAufgabeAlsString() : '';
+        
+        tableData.push([aufgabe1, aufgabe2]);
+    }
+
+    // Tabelle erstellen
+    doc.autoTable({
+        startY: 35,
+        head: [['Aufgabe 1', 'Aufgabe 2']],
+        body: tableData,
+        styles: {
+            fontSize: 14,
+            cellPadding: 8,
+            halign: 'left'
+        },
+        headStyles: {
+            fillColor: [220, 220, 220],
+            textColor: [0, 0, 0],
+            fontStyle: 'bold'
+        },
+        columnStyles: {
+            0: { cellWidth: 90 },
+            1: { cellWidth: 90 }
+        },
+        margin: { top: 35, left: 15, right: 15 }
+    });
+
+    // PDF speichern
+    doc.save( "rechenaufgaben.pdf" );
+}

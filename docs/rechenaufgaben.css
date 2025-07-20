@@ -1,0 +1,44 @@
+body {
+    font-family: sans-serif;
+    padding: 1em;
+}
+
+h1 {
+    margin-bottom: 1.5em;
+}
+
+a {
+    margin-bottom: 1em;
+}
+
+.lehrveranstaltung-item, .protokoll-eintrag  {
+    margin-bottom: 10px;
+}
+
+#inputThema {
+    width: 30vw;
+    min-width: 200px;
+    max-width: 500px;
+}
+
+/* Tablet screens - 50% viewport width */
+@media screen and (max-width: 1024px) {
+    #inputThema {
+        width: 50vw;
+    }
+}
+
+/* Mobile screens - 75% viewport width */
+@media screen and (max-width: 600px) {
+    #inputThema {
+        width: 75vw;
+    }
+}
+
+/* Small mobile screens - 100% available width */
+@media screen and (max-width: 400px) {
+    #inputThema {
+        width: calc(100vw - 4em); /* Account for padding and margins */
+        max-width: none;
+    }
+}
