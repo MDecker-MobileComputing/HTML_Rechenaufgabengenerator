@@ -2,8 +2,8 @@
 
 let anzahlAufgaben = 84; 
 
-let zahl1min = 9990;
-let zahl1max = 999;
+let zahl1min = 999;
+let zahl1max = 9999;
 
 let zahl2min = 101;
 let zahl2max = 199;
@@ -153,16 +153,59 @@ function writeRechenaufgabenToPDF( rechenaufgabenArray ) {
         author: "Rechenaufgabengenerator (Clientseitige Web-App)"
     });
 
-    // Rechenaufgaben paarweise in Zeilen anordnen (2 Spalten)
+    // Rechenaufgaben-Tabelle erstellen
+    createTable( doc, rechenaufgabenArray, false );
+
+    // Anzahl der Aufgabenseiten vor dem Hinzufügen der Lösungsseiten merken
+    const aufgabenSeiten = doc.internal.getNumberOfPages();
+
+    // Neue Seite für Musterlösung hinzufügen
+    doc.addPage();
+
+    // Musterlösungs-Tabelle erstellen
+    createTable( doc, rechenaufgabenArray, true );
+
+    // Seitentitel zu allen Seiten hinzufügen
+    addPageTitles( doc, aufgabenSeiten );
+
+    // Footer hinzufügen
+    writeFooterToPDF( doc );
+
+    // PDF im Browser-Tab zur Vorschau öffnen
+    const pdfBlob = doc.output( "blob");
+    const pdfUrl = URL.createObjectURL( pdfBlob );
+    window.open( pdfUrl, "_blank" );
+
+    // Optional: PDF auch als Download anbieten
+    // doc.save( "rechenaufgaben.pdf" );
+}
+
+
+/**
+ * Erstellt eine Tabelle mit Rechenaufgaben oder Musterlösungen.
+ * 
+ * @param {jsPDF} doc - PDF-Dokument, in das die Tabelle geschrieben wird
+ * 
+ * @param {Array<Rechenaufgabe>} rechenaufgabenArray - Array mit den Rechenaufgaben
+ * 
+ * @param {boolean} istMusterloesung - `true` für Musterlösungen, `false` für Aufgaben
+ */
+function createTable( doc, rechenaufgabenArray, istMusterloesung ) {
+
     const tabellenDaten = [];
     
     for ( let i = 0; i < rechenaufgabenArray.length; i += 2 ) {
         
-        const aufgabe1 = rechenaufgabenArray[ i ].getAufgabeAlsString();
-        const aufgabe2 = i + 1 < rechenaufgabenArray.length ? 
-                                 rechenaufgabenArray[ i + 1 ].getAufgabeAlsString() : '';
+        const zeile1 = istMusterloesung ? 
+                       rechenaufgabenArray[ i ].getLoesungAlsString() :
+                       rechenaufgabenArray[ i ].getAufgabeAlsString();
         
-        tabellenDaten.push( [ aufgabe1, aufgabe2 ] );
+        const zeile2 = i + 1 < rechenaufgabenArray.length ? 
+                       (istMusterloesung ? 
+                        rechenaufgabenArray[ i + 1 ].getLoesungAlsString() :
+                        rechenaufgabenArray[ i + 1 ].getAufgabeAlsString()) : '';
+        
+        tabellenDaten.push( [ zeile1, zeile2 ] );
     }
 
     // Tabelle erstellen
@@ -183,69 +226,19 @@ function writeRechenaufgabenToPDF( rechenaufgabenArray ) {
         },
         margin: { top: 35, left: 15, right: 15 }
     });
-
-    // Anzahl der Aufgabenseiten vor dem Hinzufügen der Lösungsseiten merken
-    const aufgabenSeiten = doc.internal.getNumberOfPages();
-
-    // Neue Seite für Musterlösung hinzufügen
-    doc.addPage();
-
-    // Lösungsdaten vorbereiten (mit Ergebnissen)
-    const loesungsDaten = [];
-    
-    for ( let i = 0; i < rechenaufgabenArray.length; i += 2 ) {
-        
-        const loesung1 = rechenaufgabenArray[ i ].getLoesungAlsString();
-        const loesung2 = i + 1 < rechenaufgabenArray.length ? 
-                                 rechenaufgabenArray[ i + 1 ].getLoesungAlsString() : '';
-        
-        loesungsDaten.push( [ loesung1, loesung2 ] );
-    }
-
-    // Lösungstabelle erstellen
-    doc.autoTable({
-        startY: 20,
-        body: loesungsDaten,
-        styles: {
-            fontSize: 14,
-            cellPadding: 3,
-            halign: "left"
-        },
-        alternateRowStyles: {
-            fillColor: [ 255, 255, 255 ] // Weiß für alle Zeilen
-        },
-        columnStyles: {
-            0: { cellWidth: 90 },
-            1: { cellWidth: 90 }
-        },
-        margin: { top: 35, left: 15, right: 15 }
-    });
-
-    // Seitentitel zu allen Seiten hinzufügen
-    addPageTitles( doc, aufgabenSeiten );
-
-    // Footer hinzufügen
-    writeFooterToPDF( doc );
-
-    // PDF im Browser-Tab zur Vorschau öffnen
-    const pdfBlob = doc.output( "blob");
-    const pdfUrl = URL.createObjectURL( pdfBlob );
-    window.open( pdfUrl, "_blank" );
-
-    // Optional: PDF auch als Download anbieten
-    // doc.save( "rechenaufgaben.pdf" );
 }
 
 
 /**
  * Fügt Seitentitel mit Seitenzahlen zu allen Seiten des PDFs hinzu.
  * 
- * @param {jsPDF} doc - Das jsPDF-Dokument
+ * @param {jsPDF} doc - PDF-Dokument, in das die Seitentitel geschrieben werden
+ * 
  * @param {number} aufgabenSeiten - Anzahl der Seiten mit Rechenaufgaben
  */
 function addPageTitles( doc, aufgabenSeiten ) {
 
-    const pageCount = doc.internal.getNumberOfPages();
+    const pageCount      = doc.internal.getNumberOfPages();
     const loesungsSeiten = pageCount - aufgabenSeiten;
     
     for ( let i = 1; i <= pageCount; i++ ) {
@@ -253,11 +246,12 @@ function addPageTitles( doc, aufgabenSeiten ) {
         doc.setPage( i );
         doc.setFontSize( 20 );
         
-        if ( i <= aufgabenSeiten ) {
-            // Seiten mit Rechenaufgaben
+        if ( i <= aufgabenSeiten ) { // Seiten mit Rechenaufgaben
+            
             doc.text( `Rechenaufgaben (${i} von ${aufgabenSeiten})`, 105, 15, { align: "center" });
-        } else {
-            // Seiten mit Musterlösungen
+
+        } else { // Seiten mit Musterlösungen
+            
             const loesungsSeiteNummer = i - aufgabenSeiten;
             doc.text( `Musterlösung (Seite ${loesungsSeiteNummer} von ${loesungsSeiten})`, 105, 15, { align: "center" });
         }
@@ -268,7 +262,7 @@ function addPageTitles( doc, aufgabenSeiten ) {
 /**
  * Schreibt den Footer mit aktuellem Datum, Wochentag und Uhrzeit in das PDF.
  * 
- * @param {jsPDF} doc - Das jsPDF-Dokument
+ * @param {jsPDF} doc - PDF-Dokument, in das der Footer geschrieben wird
  */
 function writeFooterToPDF( doc ) {
 
