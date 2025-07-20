@@ -2,15 +2,28 @@
 
 let anzahlAufgaben = 10; 
 
-let zahl1min =  50;
-let zahl1max = 100;
+let zahl1min = 9990;
+let zahl1max = 999;
 
-let zahl2min = 150;
-let zahl2max = 999;
+let zahl2min = 101;
+let zahl2max = 199;
 
 
 /**
- * Klasse für eine Rechenaufgabe
+ * Formatiert eine Zahl mit deutschen Tausendertrennpunkten.
+ * 
+ * @param {number} zahl - Die zu formatierende Zahl
+ * 
+ * @returns {string} Die formatierte Zahl, z.B. "1.234"
+ */
+function formatZahlMitTausendertrennpunkten( zahl ) {
+    
+    return zahl.toLocaleString( "de-DE" );
+}
+
+
+/**
+ * Klasse für eine Rechenaufgabe. 
  */
 class Rechenaufgabe {
     
@@ -35,21 +48,28 @@ class Rechenaufgabe {
 
     /**
      * Gibt die Rechenaufgabe ohne Ergebnis zurück
-     * @returns {string} Die Aufgabe ohne Lösung, z.B. "5 + 3 = "
+     * @returns {string} Die Aufgabe ohne Lösung, z.B. "1.234 + 567 = "
      */
     getAufgabeAlsString() {
 
-        return `${this.zahl1} ${this.operator} ${this.zahl2} = `;
+        const zahl1Formatiert = formatZahlMitTausendertrennpunkten( this.zahl1 );
+        const zahl2Formatiert = formatZahlMitTausendertrennpunkten( this.zahl2 );
+        
+        return `${zahl1Formatiert} ${this.operator} ${zahl2Formatiert} = `;
     }
 
     /**
      * Gibt die Rechenaufgabe als String mit dem Ergebnis zurück
      * @returns {string} Die Rechenaufgabe als String mit dem Ergebnis,
-     *                   z.B. "5 + 3 = 8"
+     *                   z.B. "1.234 + 567 = 1.801"
      */
     getLoesungAlsString() {
 
-        return `${this.zahl1} ${this.operator} ${this.zahl2} = ${this.result}`;
+        const zahl1Formatiert = formatZahlMitTausendertrennpunkten( this.zahl1 );
+        const zahl2Formatiert = formatZahlMitTausendertrennpunkten( this.zahl2 );
+        const resultFormatiert = formatZahlMitTausendertrennpunkten( this.result );
+
+        return `${zahl1Formatiert} ${this.operator} ${zahl2Formatiert} = ${resultFormatiert}`;
     }
 }
 
@@ -185,23 +205,23 @@ function writeFooterToPDF( doc ) {
     const currentDate = new Date();
     
     // Datum und Zeit separat formatieren
-    const dateString = currentDate.toLocaleDateString('de-DE', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
+    const dateString = currentDate.toLocaleDateString( "de-DE", {
+        year : "numeric",
+        month: "2-digit",
+        day  : "2-digit"
     });
     
-    const timeString = currentDate.toLocaleTimeString('de-DE', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
+    const timeString = currentDate.toLocaleTimeString( "de-DE", {
+        hour  : "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
     });
     
     // Wochentag auf Deutsch ermitteln
-    const weekdays = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+    const weekdays = [ "So", "Mo", "Di", "Mi", "Do", "Fr", "Sa" ];
     const weekday = weekdays[currentDate.getDay()];
     
     const pageHeight = doc.internal.pageSize.height;
     doc.setFontSize(10);
-    doc.text(`Erstellt am: ${dateString} (${weekday}), ${timeString} Uhr`, 15, pageHeight - 10);
+    doc.text( `Erstellt am: ${dateString} (${weekday}), ${timeString} Uhr`, 15, pageHeight - 10 );
 }
