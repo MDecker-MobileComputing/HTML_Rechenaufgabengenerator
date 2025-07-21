@@ -42,3 +42,83 @@ a {
         max-width: none;
     }
 }
+
+/* Form styling */
+#konfigurationsForm {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    max-width: 600px;
+}
+
+#konfigurationsForm h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #495057;
+    font-size: 1.5em;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #495057;
+}
+
+.form-group input[type="number"] {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-group input[type="number"]:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.form-group input[type="number"]:invalid {
+    border-color: #dc3545;
+}
+
+#buttonRechenaufgabenErzeugen {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+}
+
+#buttonRechenaufgabenErzeugen:hover {
+    background-color: #0056b3;
+}
+
+#buttonRechenaufgabenErzeugen:active {
+    background-color: #004085;
+}
+
+/* Responsive form styling */
+@media screen and (max-width: 600px) {
+    #konfigurationsForm {
+        padding: 15px;
+        margin-left: -0.5em;
+        margin-right: -0.5em;
+    }
+
+    .form-group input[type="number"] {
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+}

@@ -1,6 +1,6 @@
 "use strict";
 
-let anzahlAufgaben = 84; 
+let anzahlAufgaben = 84;
 
 let zahl1min = 999;
 let zahl1max = 9999;
@@ -8,34 +8,41 @@ let zahl1max = 9999;
 let zahl2min = 101;
 let zahl2max = 199;
 
+// Input-Elemente aus dem Formular
+let inputAnzahlAufgaben;
+let inputZahl1min;
+let inputZahl1max;
+let inputZahl2min;
+let inputZahl2max;
+
 
 /**
  * Formatiert eine Zahl mit deutschen Tausendertrennpunkten.
- * 
+ *
  * @param {number} zahl - Die zu formatierende Zahl
- * 
+ *
  * @returns {string} Die formatierte Zahl, z.B. "1.234"
  */
 function formatZahlMitTausendertrennpunkten( zahl ) {
-    
+
     return zahl.toLocaleString( "de-DE" );
 }
 
 
 /**
- * Klasse für eine Rechenaufgabe. 
+ * Klasse für eine Rechenaufgabe.
  */
 class Rechenaufgabe {
-    
+
     /**
      * Konstruktor für eine Rechenaufgabe.
-     * 
+     *
      * @param {number} zahl1 - Die erste Zahl
-     * 
+     *
      * @param {number} zahl2 - Die zweite Zahl
-     * 
+     *
      * @param {string} operator - Der Operator (z.B. "+", "-", "*", "/")
-     * 
+     *
      * @param {number} result - Das Ergebnis der Rechenaufgabe
      */
     constructor( zahl1, zahl2, operator, result ) {
@@ -54,7 +61,7 @@ class Rechenaufgabe {
 
         const zahl1Formatiert = formatZahlMitTausendertrennpunkten( this.zahl1 );
         const zahl2Formatiert = formatZahlMitTausendertrennpunkten( this.zahl2 );
-        
+
         return `${zahl1Formatiert} ${this.operator} ${zahl2Formatiert} = `;
     }
 
@@ -79,6 +86,12 @@ class Rechenaufgabe {
  */
 window.addEventListener( "load", async function () {
 
+    inputAnzahlAufgaben = this.document.getElementById( "inputAnzahlAufgaben" );
+    inputZahl1min       = this.document.getElementById( "inputZahl1min"       );
+    inputZahl1max       = this.document.getElementById( "inputZahl1max"       );
+    inputZahl2min       = this.document.getElementById( "inputZahl2min"       );
+    inputZahl2max       = this.document.getElementById( "inputZahl2max"       );
+
     const buttonRechenaufgabenErzeugen = this.document.getElementById( "buttonRechenaufgabenErzeugen" );
     buttonRechenaufgabenErzeugen.addEventListener( "click", onButtonRechenaufgabenErzeugen );
 });
@@ -86,16 +99,48 @@ window.addEventListener( "load", async function () {
 
 /**
  * Gibt eine zufällige Zahl in einem bestimmten Bereich zurück.
- * 
+ *
  * @param {number} min - Die untere Grenze (inklusive)
- * 
+ *
  * @param {number} max - Die obere Grenze (inklusive)
- * 
+ *
  * @returns {number} Eine zufällige Zahl im Bereich von `min` bis `max`
  */
 function getZufallszahl( min, max ) {
 
     return Math.floor( Math.random() * ( max - min + 1 ) ) + min;
+}
+
+/**
+ * Liest Konfigurationswerte aus dem Formular aus.
+ */
+function holeFormularWerte() {
+
+    anzahlAufgaben = parseInt( inputAnzahlAufgaben.value ) || 0;
+
+    const formZahl1min       = parseInt( inputZahl1min.value       ) || 0;
+    const formZahl1max       = parseInt( inputZahl1max.value       ) || 0;
+    const formZahl2min       = parseInt( inputZahl2min.value       ) || 0;
+    const formZahl2max       = parseInt( inputZahl2max.value       ) || 0;
+
+    if ( formZahl1max < formZahl1min ) {
+
+        alert( "Das Maximum der ersten Zahl muss größer oder gleich dem Minimum sein!" );
+        return false;
+    }
+
+    if ( formZahl2max < formZahl2min ) {
+
+        alert( "Das Maximum der zweiten Zahl muss größer oder gleich dem Minimum sein!" );
+        return false;
+    }
+
+    zahl1min = formZahl1min;
+    zahl1max = formZahl1max;
+    zahl2min = formZahl2min;
+    zahl2max = formZahl2max;
+
+    return true;
 }
 
 
@@ -104,6 +149,12 @@ function getZufallszahl( min, max ) {
  * Erzeugt Rechenaufgaben und schreibt sie dann in eine PDF-Datei.
  */
 async function onButtonRechenaufgabenErzeugen() {
+
+    const formWerteGültig = holeFormularWerte();
+    if ( !formWerteGültig ) {
+
+        return;
+    }
 
     let rechenaufgabenArray = [];
 
@@ -138,7 +189,7 @@ async function onButtonRechenaufgabenErzeugen() {
 
 /**
  * Erstellt PDF mit den Rechenaufgaben.
- * 
+ *
  * @param {Array<Rechenaufgabe>} rechenaufgabenArray In PDF-Datei zu schreibende Rechenaufgaben
  */
 function writeRechenaufgabenToPDF( rechenaufgabenArray ) {
@@ -183,28 +234,28 @@ function writeRechenaufgabenToPDF( rechenaufgabenArray ) {
 
 /**
  * Erstellt eine Tabelle mit Rechenaufgaben oder Musterlösungen.
- * 
+ *
  * @param {jsPDF} doc - PDF-Dokument, in das die Tabelle geschrieben wird
- * 
+ *
  * @param {Array<Rechenaufgabe>} rechenaufgabenArray - Array mit den Rechenaufgaben
- * 
+ *
  * @param {boolean} istMusterloesung - `true` für Musterlösungen, `false` für Aufgaben
  */
 function createTable( doc, rechenaufgabenArray, istMusterloesung ) {
 
     const tabellenDaten = [];
-    
+
     for ( let i = 0; i < rechenaufgabenArray.length; i += 2 ) {
-        
-        const zeile1 = istMusterloesung ? 
+
+        const zeile1 = istMusterloesung ?
                        rechenaufgabenArray[ i ].getLoesungAlsString() :
                        rechenaufgabenArray[ i ].getAufgabeAlsString();
-        
-        const zeile2 = i + 1 < rechenaufgabenArray.length ? 
-                       (istMusterloesung ? 
+
+        const zeile2 = i + 1 < rechenaufgabenArray.length ?
+                       (istMusterloesung ?
                         rechenaufgabenArray[ i + 1 ].getLoesungAlsString() :
                         rechenaufgabenArray[ i + 1 ].getAufgabeAlsString()) : '';
-        
+
         tabellenDaten.push( [ zeile1, zeile2 ] );
     }
 
@@ -231,27 +282,27 @@ function createTable( doc, rechenaufgabenArray, istMusterloesung ) {
 
 /**
  * Fügt Seitentitel mit Seitenzahlen zu allen Seiten des PDFs hinzu.
- * 
+ *
  * @param {jsPDF} doc - PDF-Dokument, in das die Seitentitel geschrieben werden
- * 
+ *
  * @param {number} aufgabenSeiten - Anzahl der Seiten mit Rechenaufgaben
  */
 function addPageTitles( doc, aufgabenSeiten ) {
 
     const pageCount      = doc.internal.getNumberOfPages();
     const loesungsSeiten = pageCount - aufgabenSeiten;
-    
+
     for ( let i = 1; i <= pageCount; i++ ) {
 
         doc.setPage( i );
         doc.setFontSize( 20 );
-        
+
         if ( i <= aufgabenSeiten ) { // Seiten mit Rechenaufgaben
-            
+
             doc.text( `Rechenaufgaben (${i} von ${aufgabenSeiten})`, 105, 15, { align: "center" });
 
         } else { // Seiten mit Musterlösungen
-            
+
             const loesungsSeiteNummer = i - aufgabenSeiten;
             doc.text( `Musterlösung (Seite ${loesungsSeiteNummer} von ${loesungsSeiten})`, 105, 15, { align: "center" });
         }
@@ -261,40 +312,40 @@ function addPageTitles( doc, aufgabenSeiten ) {
 
 /**
  * Schreibt den Footer mit aktuellem Datum, Wochentag und Uhrzeit in das PDF.
- * 
+ *
  * @param {jsPDF} doc - PDF-Dokument, in das der Footer geschrieben wird
  */
 function writeFooterToPDF( doc ) {
 
     const currentDate = new Date();
-    
+
     // Datum und Zeit separat formatieren
     const dateString = currentDate.toLocaleDateString( "de-DE", {
         year : "numeric",
         month: "2-digit",
         day  : "2-digit"
     });
-    
+
     const timeString = currentDate.toLocaleTimeString( "de-DE", {
         hour  : "2-digit",
         minute: "2-digit",
         second: "2-digit"
     });
-    
+
     // Wochentag auf Deutsch ermitteln
     const wochentageArray = [ "So", "Mo", "Di", "Mi", "Do", "Fr", "Sa" ];
     const wochentag       = wochentageArray[ currentDate.getDay() ];
-    
+
     const pageHeight = doc.internal.pageSize.height;
     const pageWidth = doc.internal.pageSize.width;
     doc.setFontSize(10);
-    
+
     // Seitenzahl und Datum/Zeit für jede Seite hinzufügen
     const pageCount = doc.internal.getNumberOfPages();
     for ( let i = 1; i <= pageCount; i++ ) {
 
         doc.setPage( i );
-        
+
         // Datum und Zeit links
         doc.text( `Erstellt am: ${dateString} (${wochentag}), ${timeString} Uhr`, 15, pageHeight - 10 );
 
