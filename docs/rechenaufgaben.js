@@ -94,6 +94,9 @@ window.addEventListener( "load", async function () {
 
     const buttonRechenaufgabenErzeugen = this.document.getElementById( "buttonRechenaufgabenErzeugen" );
     buttonRechenaufgabenErzeugen.addEventListener( "click", onButtonRechenaufgabenErzeugen );
+
+    const buttonKonfigurationSpeichern = this.document.getElementById( "buttonKonfigurationSpeichern" );
+    buttonKonfigurationSpeichern.addEventListener( "click", onButtonKonfigurationSpeichern );
 });
 
 
@@ -118,10 +121,10 @@ function holeFormularWerte() {
 
     anzahlAufgaben = parseInt( inputAnzahlAufgaben.value ) || 0;
 
-    const formZahl1min       = parseInt( inputZahl1min.value       ) || 0;
-    const formZahl1max       = parseInt( inputZahl1max.value       ) || 0;
-    const formZahl2min       = parseInt( inputZahl2min.value       ) || 0;
-    const formZahl2max       = parseInt( inputZahl2max.value       ) || 0;
+    const formZahl1min = parseInt( inputZahl1min.value ) || 0;
+    const formZahl1max = parseInt( inputZahl1max.value ) || 0;
+    const formZahl2min = parseInt( inputZahl2min.value ) || 0;
+    const formZahl2max = parseInt( inputZahl2max.value ) || 0;
 
     if ( formZahl1max < formZahl1min ) {
 
@@ -185,6 +188,27 @@ async function onButtonRechenaufgabenErzeugen() {
 
     writeRechenaufgabenToPDF( rechenaufgabenArray );
 };
+
+
+/**
+ * Event-Handler, der aufgerufen wird, wenn der Button "Konfiguration speichern" geklickt wird.
+ */
+async function onButtonKonfigurationSpeichern() {
+
+    let konfigName = await prompt( "Bitte geben Sie einen Namen für die Rechenaufgabe-Konfiguration ein:" );
+    if ( !konfigName || konfigName.trim() === "" ) {
+
+        alert( "Die Konfiguration wurde nicht gespeichert, da kein Name eingegeben wurde." );
+        return;
+    }
+
+    konfigName = konfigName.trim();
+
+    const id = await speichereKonfiguration( konfigName, anzahlAufgaben, zahl1min, zahl2min, zahl1max, zahl2max );
+    console.log( `Konfiguration "${konfigName}" gespeichert mit ID ${id}.` );
+
+    if ( id ) { alert( "Die Konfiguration wurde erfolgreich gespeichert." ); }
+}
 
 
 /**
