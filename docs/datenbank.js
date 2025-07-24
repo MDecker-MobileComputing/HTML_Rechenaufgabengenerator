@@ -7,10 +7,14 @@
 (async () => {
 
     await alasql( "CREATE INDEXEDDB DATABASE IF NOT EXISTS konfig_db"  );
+    console.log( "Datenbank >indexeddb< existiert bereits." );
+
     await alasql( "ATTACH INDEXEDDB DATABASE konfig_db" );
+    console.log( "Verbindung zu Datenbank >indexeddb< aufgebaut." );
+
     await alasql( "USE konfig_db" );
     await alasql( `CREATE TABLE IF NOT EXISTS konfigurationen (
-                     id INT IDENTITY PRIMARY KEY,
+                     id INT IDENTITY PRIMARY KEY AUTOINCREMENT,
                      name STRING,
                      anzahl INT,
                      min1 INT,
@@ -18,7 +22,7 @@
                      max1 INT,
                      max2 INT )`
                 );
-    console.log( "Datenbank initialisiert." );
+    console.log( "Tabelle >konfigurationen< existiert." );
 })();
 
 
@@ -35,12 +39,11 @@
  */
 async function speichereKonfiguration( name, anzahl, min1, min2, max1, max2 ) {
 
-    const result = await alasql( `INSERT INTO konfigurationen
-                                    (name, anzahl, min1, min2, max1, max2)
-                                    VALUES (?, ?, ?, ?, ?, ?)`,
-                                 [ name, anzahl, min1, min2, max1, max2 ] );
-
-    const newId = result[0];
-    console.log( `Konfiguration "${name}" gespeichert mit ID ${newId}.` );
-    return newId;
+    const neueID = await alasql.promise(
+                            `INSERT INTO konfigurationen
+                             (name, anzahl, min1, min2, max1, max2)
+                             VALUES (?, ?, ?, ?, ?, ?)`,
+                            [ name, anzahl, min1, min2, max1, max2 ]
+                    );
+    return neueID;
 }
