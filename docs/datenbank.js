@@ -1,5 +1,7 @@
 "use strict";
 
+// Persistenz in IndexedDB mit alasql: https://github.com/AlaSQL/alasql
+
 
 /**
  * Initialisiert die IndexedDB-Datenbank.
@@ -46,4 +48,12 @@ async function speichereKonfiguration( name, anzahl, min1, min2, max1, max2 ) {
                             [ name, anzahl, min1, min2, max1, max2 ]
                     );
     return neueID;
+}
+
+
+async function holeAlleKonfigurationen() {
+    const konfigurationen = await alasql.promise(
+        `SELECT * FROM konfigurationen ORDER BY name ASC`
+    );
+    return konfigurationen;
 }

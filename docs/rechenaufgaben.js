@@ -97,6 +97,8 @@ window.addEventListener( "load", async function () {
 
     const buttonKonfigurationSpeichern = this.document.getElementById( "buttonKonfigurationSpeichern" );
     buttonKonfigurationSpeichern.addEventListener( "click", onButtonKonfigurationSpeichern );
+
+    holeAlleKonfigurationen();
 });
 
 
