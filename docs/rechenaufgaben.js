@@ -99,7 +99,48 @@ window.addEventListener( "load", async function () {
     const buttonKonfigurationSpeichern = this.document.getElementById( "buttonKonfigurationSpeichern" );
     buttonKonfigurationSpeichern.addEventListener( "click", onButtonKonfigurationSpeichern );
     */
+
+    urlParameterAuswerten();
 });
+
+
+/**
+ * Liest die URL-Parameter aus und setzt die entsprechenden Input-Felder im Formular.
+ */
+function urlParameterAuswerten() {
+
+    const urlParams = new URLSearchParams( window.location.search );
+
+    const urlAnzahlAufgaben = urlParams.get( "anzahl" );
+    if ( urlAnzahlAufgaben !== null ) {
+
+        inputAnzahlAufgaben.value = urlAnzahlAufgaben;
+    }
+
+    const urlZahl1min = urlParams.get( "zahl1min" );
+    if ( urlZahl1min !== null ) {
+
+        inputZahl1min.value = urlZahl1min;
+    }
+
+    const urlZahl1max = urlParams.get( "zahl1max" );
+    if ( urlZahl1max !== null ) {
+
+        inputZahl1max.value = urlZahl1max;
+    }
+
+    const urlZahl2min = urlParams.get( "zahl2min" );
+    if ( urlZahl2min !== null ) {
+
+        inputZahl2min.value = urlZahl2min;
+    }
+
+    const urlZahl2max = urlParams.get( "zahl2max" );
+    if ( urlZahl2max !== null ) {
+
+        inputZahl2max.value = urlZahl2max;
+    }
+}
 
 
 /**
