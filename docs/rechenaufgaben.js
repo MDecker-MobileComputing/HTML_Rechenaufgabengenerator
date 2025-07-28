@@ -157,8 +157,13 @@ function getZufallszahl( min, max ) {
     return Math.floor( Math.random() * ( max - min + 1 ) ) + min;
 }
 
+
 /**
  * Liest Konfigurationswerte aus dem Formular aus.
+ * <br><br>
+ *
+ * Beispiel für Aufruf:
+ * index.html?anzahl=86&zahl1min=10&zahl1max=20&zahl2min=5&zahl2max=9
  */
 function holeFormularWerte() {
 
@@ -230,7 +235,7 @@ async function onButtonRechenaufgabenErzeugen() {
     }
 
     writeRechenaufgabenToPDF( rechenaufgabenArray );
-};
+}
 
 
 /**
