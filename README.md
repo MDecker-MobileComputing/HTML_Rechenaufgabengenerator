@@ -3,7 +3,7 @@
 <br>
 
 Diese Repo enthält eine einfache Web-Seite (HTML, JavaScript und CSS), die zufällige Rechenaufgaben
-in Form einer PDF-Datei schreibt.
+in Form einer PDF-Datei (siehe [hier](PDF-Export-Beispiel.pdf) für Beispiel) schreibt.
 
 <br>
 
