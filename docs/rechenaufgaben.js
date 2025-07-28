@@ -95,10 +95,10 @@ window.addEventListener( "load", async function () {
     const buttonRechenaufgabenErzeugen = this.document.getElementById( "buttonRechenaufgabenErzeugen" );
     buttonRechenaufgabenErzeugen.addEventListener( "click", onButtonRechenaufgabenErzeugen );
 
+    /*
     const buttonKonfigurationSpeichern = this.document.getElementById( "buttonKonfigurationSpeichern" );
     buttonKonfigurationSpeichern.addEventListener( "click", onButtonKonfigurationSpeichern );
-
-    holeAlleKonfigurationen();
+    */
 });
 
 
@@ -203,13 +203,6 @@ async function onButtonKonfigurationSpeichern() {
         alert( "Die Konfiguration wurde nicht gespeichert, da kein Name eingegeben wurde." );
         return;
     }
-
-    konfigName = konfigName.trim();
-
-    const id = await speichereKonfiguration( konfigName, anzahlAufgaben, zahl1min, zahl2min, zahl1max, zahl2max );
-    console.log( `Konfiguration "${konfigName}" gespeichert mit ID ${id}.` );
-
-    if ( id ) { alert( "Die Konfiguration wurde erfolgreich gespeichert." ); }
 }
 
 
@@ -278,9 +271,9 @@ function createTable( doc, rechenaufgabenArray, istMusterloesung ) {
                        rechenaufgabenArray[ i ].getAufgabeAlsString();
 
         const zeile2 = i + 1 < rechenaufgabenArray.length ?
-                       (istMusterloesung ?
-                        rechenaufgabenArray[ i + 1 ].getLoesungAlsString() :
-                        rechenaufgabenArray[ i + 1 ].getAufgabeAlsString()) : '';
+                       ( istMusterloesung ?
+                         rechenaufgabenArray[ i + 1 ].getLoesungAlsString()   :
+                         rechenaufgabenArray[ i + 1 ].getAufgabeAlsString() ) : '';
 
         tabellenDaten.push( [ zeile1, zeile2 ] );
     }
@@ -330,7 +323,8 @@ function addPageTitles( doc, aufgabenSeiten ) {
         } else { // Seiten mit Musterlösungen
 
             const loesungsSeiteNummer = i - aufgabenSeiten;
-            doc.text( `Musterlösung (Seite ${loesungsSeiteNummer} von ${loesungsSeiten})`, 105, 15, { align: "center" });
+            doc.text( `Musterlösung (Seite ${loesungsSeiteNummer} von ${loesungsSeiten})`,
+                      105, 15, { align: "center" });
         }
     }
 }
