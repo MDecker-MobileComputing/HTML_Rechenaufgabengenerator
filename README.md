@@ -7,7 +7,7 @@ in Form einer PDF-Datei (siehe [hier](PDF-Export-Beispiel.pdf) für Beispiel) sc
 
 <br>
 
-Webseite über *GitHub Pages*: 
+Bereitstellung der Web-Seite über  *GitHub Pages*:
 
 https://mdecker-mobilecomputing.github.io/HTML_Rechenaufgabengenerator/
 
